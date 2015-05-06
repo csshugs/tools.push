@@ -1,0 +1,54 @@
+// /*------------------------------------*\
+//     #PUSH
+// \*------------------------------------*/
+
+// A mixin to spit out our push classes. Pass in the columns we want to push,
+// and an optional suffix for responsive push. E.g. to create push thirds
+// and quarters for a small breakpoint:
+//
+// @include inuit-push(3 4, -sm);
+
+// Predefine the variables below in order to alter and enable specific features.
+$inuit-push-namespace: $inuit-namespace !default;
+
+// Do we want to use classes like `<div class="u-push-1/4">` instead of
+// `<div class="u-push-1-of-4">`?
+$inuit-use-fractions: true !default;
+
+// Depending on what we chose for `$inuit-use-fractions`, create the relevant
+// delimiter.
+@if ($inuit-use-fractions == true) {
+    $inuit-push-delimiter: \/ !global;
+} @else {
+    $inuit-push-delimiter: -of- !global;
+}
+
+@mixin inuit-push($inuit-widths-columns, $inuit-widths-breakpoint: null) {
+
+    // Loop through the number of columns for each denominator of our fractions.
+    @each $inuit-push-denominator in $inuit-widths-columns {
+
+        // If we’re trying to push wholes, just spit a 100% left declaration
+        // utility out one time only.
+        @if ($inuit-push-denominator == 1) {
+            .#{$inuit-push-namespace}u-push-1#{$inuit-push-delimiter}1#{$inuit-widths-breakpoint} {
+                left: 100% !important;
+            }
+        } @else {
+
+            // Begin creating a numberator for our fraction up until we hit the
+            // denominator.
+            @for $inuit-push-numerator from 1 to $inuit-push-denominator {
+
+                // Build a class in the format `.u-push-3/4` or `.u-push-3-of-4`.
+                .#{$inuit-push-namespace}u-push-#{$inuit-push-numerator}#{$inuit-push-delimiter}#{$inuit-push-denominator}#{$inuit-widths-breakpoint} {
+                    left: ($inuit-push-numerator / $inuit-push-denominator) * 100% !important;
+                }
+
+            }
+
+        }
+
+    }
+
+}
